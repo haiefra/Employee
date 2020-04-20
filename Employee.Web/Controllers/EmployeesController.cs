@@ -33,8 +33,8 @@ namespace Employee.Web.Controllers
                 return NotFound();
             }
 
-            var employeeEntity = await _context.Employees
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var employeeEntity = await _context.Employees.FindAsync(id);
+                
             if (employeeEntity == null)
             {
                 return NotFound();
@@ -54,7 +54,7 @@ namespace Employee.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Document,FirstName,LastName,FixedPhone,CellPhone,Address")] EmployeeEntity employeeEntity)
+        public async Task<IActionResult> Create( EmployeeEntity employeeEntity)
         {
             if (ModelState.IsValid)
             {
@@ -81,12 +81,10 @@ namespace Employee.Web.Controllers
             return View(employeeEntity);
         }
 
-        // POST: Employees/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Document,FirstName,LastName,FixedPhone,CellPhone,Address")] EmployeeEntity employeeEntity)
+        public async Task<IActionResult> Edit(int id,  EmployeeEntity employeeEntity)
         {
             if (id != employeeEntity.Id)
             {
@@ -95,22 +93,10 @@ namespace Employee.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
+                
                     _context.Update(employeeEntity);
                     await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeEntityExists(employeeEntity.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+               
                 return RedirectToAction(nameof(Index));
             }
             return View(employeeEntity);
@@ -124,30 +110,18 @@ namespace Employee.Web.Controllers
                 return NotFound();
             }
 
-            var employeeEntity = await _context.Employees
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var employeeEntity = await _context.Employees.FindAsync(id);
+              
             if (employeeEntity == null)
             {
                 return NotFound();
             }
 
-            return View(employeeEntity);
-        }
-
-        // POST: Employees/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var employeeEntity = await _context.Employees.FindAsync(id);
             _context.Employees.Remove(employeeEntity);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployeeEntityExists(int id)
-        {
-            return _context.Employees.Any(e => e.Id == id);
-        }
+       
     }
 }
